@@ -3,73 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>互动剧场</title>
+    <title>互动剧场 - 第十二夜</title>
     <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
         }
+        
         .container {
             text-align: center;
-            background: white;
+            max-width: 800px;
             padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
         }
-        .title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #6366f1;
+        
+        h1 {
+            font-size: 3rem;
             margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
+        
         .subtitle {
-            color: #6b7280;
+            font-size: 1.5rem;
             margin-bottom: 2rem;
+            opacity: 0.9;
         }
+        
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .feature h3 {
+            margin-bottom: 0.5rem;
+            color: #ffd700;
+        }
+        
         .btn {
-            background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
             color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
+        
         .btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
             transform: translateY(-2px);
         }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #6366f1;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        
+        .api-status {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            font-family: monospace;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        .status-ok {
+            color: #4ade80;
+        }
+        
+        .status-error {
+            color: #f87171;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="title">互动剧场</h1>
-        <p class="subtitle">应用正在启动中...</p>
-        <div class="loading"></div>
-        <br><br>
-        <button class="btn" onclick="window.location.href='/api/login'">
-            点击进入
-        </button>
+        <h1>互动剧场</h1>
+        <p class="subtitle">第十二夜 - 莎士比亚经典剧作</p>
+        
+        <p class="description">
+            欢迎来到互动剧场！在这里，您可以与《第十二夜》中的经典角色进行对话，
+            创作属于自己的剧本，记录排练过程，深入体验戏剧的魅力。
+        </p>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>🎭 角色对话</h3>
+                <p>与薇奥拉、奥西诺公爵、奥丽维亚等角色互动对话</p>
+            </div>
+            <div class="feature">
+                <h3>✍️ 剧本创作</h3>
+                <p>创作和管理您的戏剧作品</p>
+            </div>
+            <div class="feature">
+                <h3>🎪 排练室</h3>
+                <p>记录排练过程和心得体会</p>
+            </div>
+            <div class="feature">
+                <h3>🌟 经典重现</h3>
+                <p>体验莎士比亚的经典剧作</p>
+            </div>
+        </div>
+        
+        <a href="/api/login" class="btn">开始体验</a>
+        
+        <div class="api-status">
+            <div>API 状态检查:</div>
+            <div id="api-status">检查中...</div>
+        </div>
     </div>
+    
+    <script>
+        // Test API endpoints
+        async function checkAPI() {
+            const statusDiv = document.getElementById('api-status');
+            
+            try {
+                const response = await fetch('/api/characters');
+                const data = await response.json();
+                
+                if (response.ok && Array.isArray(data)) {
+                    statusDiv.innerHTML = `
+                        <div class="status-ok">✅ 服务器运行正常</div>
+                        <div class="status-ok">✅ 角色数据加载成功 (${data.length}个角色)</div>
+                        <div style="margin-top: 0.5rem;">角色列表: ${data.map(c => c.name).join(', ')}</div>
+                    `;
+                } else {
+                    statusDiv.innerHTML = '<div class="status-error">❌ API响应异常</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="status-error">❌ 连接失败: ${error.message}</div>`;
+            }
+        }
+        
+        // Check API status when page loads
+        window.addEventListener('load', checkAPI);
+    </script>
 </body>
 </html>
