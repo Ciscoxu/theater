@@ -1,9 +1,10 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
 import { useLocation } from "wouter";
 import { Theater as TheaterIcon, Users, BookOpen, Play, LogOut } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
+import React from "react";
 
 export default function Theater() {
   const [, setLocation] = useLocation();
@@ -25,7 +26,7 @@ export default function Theater() {
             </h1>
           </div>
           <div className="flex items-center space-x-4">
-            {user && (
+            {user && typeof user === "object" && (
               <div className="flex items-center space-x-3">
                 <span className="text-sm text-gray-600 dark:text-gray-300">
                   欢迎, {user.firstName || user.email}

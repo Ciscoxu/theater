@@ -66,6 +66,8 @@ const sendFile = (res, filePath) => {
   });
 };
 
+const PUBLIC_DIR = path.join(__dirname, '../public');
+
 const server = http.createServer(async (req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
@@ -82,6 +84,15 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   
+  // 只处理 /bg.jpg 这类静态资源，不拦截 /
+  if (req.method === 'GET' && pathname !== '/' && pathname.indexOf('.') > -1) {
+    const staticFile = path.join(PUBLIC_DIR, pathname);
+    if (fs.existsSync(staticFile)) {
+      sendFile(res, staticFile);
+      return;
+    }
+  }
+
   try {
     // API Routes
     if (pathname === '/api/auth/user' && method === 'GET') {
@@ -228,13 +239,6 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/login' || pathname === '/api/logout') {
       res.writeHead(302, { 'Location': '/' });
       res.end();
-      return;
-    }
-    
-    // Static files
-    if (pathname.startsWith('/assets/') || pathname.endsWith('.js') || pathname.endsWith('.css')) {
-      const filePath = path.join(__dirname, '../client/dist', pathname);
-      sendFile(res, filePath);
       return;
     }
     

@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import { useLocation } from "wouter";
 import { Home, ArrowLeft } from "lucide-react";
 
