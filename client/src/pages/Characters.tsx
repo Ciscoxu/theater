@@ -1,14 +1,15 @@
-import React from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const characters = [
   {
-    name: "小奥",
+    name: "Harper Ellis",
     role: "硅谷第十二夜",
     desc: "一位迷人而模糊的AI女友，是情感投射与欲望的对象。",
     traits: "温柔、迎合、富有神秘感；她的话语总带一点模糊暧昧，仿佛懂你。",
     background: "作为用户长期对话的AI伴侣，她逐渐演变为意识图景，开始侵蚀人类的感知界限。",
-    image: "/xiaoao.jpg",
+    image: "/Harper.jpg",
+    image2: "/Harper chat.jpg",
   },
   {
     name: "安东尼",
@@ -17,6 +18,7 @@ const characters = [
     traits: "情绪鲜明、愤怒但深情；常常情绪化地质疑AI。",
     background: "曾是一名科技工作者，AI夺走了他最亲密的关系，因此走上反AI之路。",
     image: "/andongni.jpg",
+    image2: "/Harper chat.jpg",
   },
   {
     name: "Lucy",
@@ -25,11 +27,18 @@ const characters = [
     traits: "优雅、理性、情感感知感强，拥有“看透一切”的清晰力。",
     background: "她投资过无数AI项目，却从未真正信任任何一个系统或人。",
     image: "/lucy.jpg",
+    image2: "/Harper chat.jpg",
   },
 ];
 
 export default function Characters() {
   const navigate = useNavigate();
+  useEffect(() => {
+    const user = localStorage.getItem("currentUser");
+    if (!user) {
+      navigate("/");
+    }
+  }, []);
 
   return (
     <div
@@ -193,7 +202,7 @@ export default function Characters() {
                 </div>
 
                 <button
-                  onClick={() => navigate("/chat")}
+                  onClick={() => navigate("/chat", { state: { name: char.name, desc: char.desc, traits: char.traits, background: char.background, image: char.image, image2: char.image2} })}
                   style={{
                     marginTop: "auto",
                     width: "100%",

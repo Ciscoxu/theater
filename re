@@ -1,4 +1,1 @@
---legacy-peer-deps
-
-
- npm run dev
+npm run dev

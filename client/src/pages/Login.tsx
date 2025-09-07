@@ -1,83 +1,136 @@
-import { useState } from "react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
-import { Label } from "../components/ui/label";
-import { useToast } from "../hooks/use-toast";
-import { Theater } from "lucide-react";
+// src/pages/Login.tsx
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const validInviteCode = '123456'; // 示例邀请码，可替换为后端验证
 
 export default function Login() {
-  const [verificationCode, setVerificationCode] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
-  const { toast } = useToast();
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [inviteCode, setInviteCode] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!verificationCode.trim()) {
-      toast({
-        title: "错误",
-        description: "请输入验证码",
-        variant: "destructive",
-      });
-      return;
-    }
+  const navigate = useNavigate();
 
-    setIsVerifying(true);
-    
-    try {
-      // 这里可以添加验证码验证逻辑
-      // 暂时直接重定向到登录
-      window.location.href = '/api/login';
-    } catch (error) {
-      toast({
-        title: "验证失败",
-        description: "请检查验证码是否正确",
-        variant: "destructive",
-      });
-    } finally {
-      setIsVerifying(false);
-    }
+  const handleLogin = () => {
+    const stored = localStorage.getItem(`user_${username}`);
+    if (!stored) return setError('用户不存在');
+    const parsed = JSON.parse(stored);
+    if (parsed.password !== password) return setError('密码错误');
+    localStorage.setItem('currentUser', username);
+    navigate('/characters');
+  };
+
+  const handleRegister = () => {
+    if (inviteCode !== validInviteCode) return setError('邀请码无效');
+    if (!username || !password) return setError('请填写账号和密码');
+    if (localStorage.getItem(`user_${username}`)) return setError('用户名已存在');
+
+    localStorage.setItem(`user_${username}`, JSON.stringify({ password }));
+    localStorage.setItem('currentUser', username);
+    navigate('/');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900 dark:to-blue-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <Theater className="h-8 w-8 text-purple-600 mr-2" />
-            <CardTitle className="text-2xl">互动剧场</CardTitle>
-          </div>
-          <CardDescription>
-            输入验证码即可进入剧场世界
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="verification-code">验证码</Label>
-              <Input
-                id="verification-code"
-                type="text"
-                placeholder="请输入验证码"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-                className="text-center text-lg tracking-widest"
-                maxLength={6}
-              />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button 
-              type="submit" 
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-              disabled={isVerifying}
-            >
-              {isVerifying ? "验证中..." : "进入剧场"}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+    <div style={{
+      minHeight: '100vh',
+      backgroundImage: "url('/bg.jpg')",
+      backgroundSize: 'cover',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}>
+      <div style={{
+        background: 'rgba(255,255,255,0.9)',
+        padding: '30px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+        width: '320px',
+        textAlign: 'center',
+      }}>
+        <h2>{isRegistering ? '注册' : '登录'}</h2>
+
+        {isRegistering && (
+          <>
+            <input
+              type="text"
+              placeholder="邀请码"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value)}
+              style={inputStyle}
+            />
+            
+            <input
+            type="text"
+            placeholder="昵称"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            style={inputStyle}
+            />
+          </>
+
+          
+        )}
+
+        <input
+          type="text"
+          placeholder="账号"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          style={inputStyle}
+        />
+
+        <input
+          type="password"
+          placeholder="密码"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={inputStyle}
+        />
+
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+
+        <button
+          onClick={isRegistering ? handleRegister : handleLogin}
+          style={buttonStyle}
+        >
+          {isRegistering ? '注册并进入' : '登录'}
+        </button>
+
+        <p style={{ marginTop: '12px' }}>
+          {isRegistering ? '已有账号？' : '还没注册？'}
+          <button
+            onClick={() => {
+              setIsRegistering(!isRegistering);
+              setError('');
+            }}
+            style={{ marginLeft: '6px', color: '#007bff', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            {isRegistering ? '去登录' : '去注册'}
+          </button>
+        </p>
+      </div>
     </div>
   );
 }
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '10px',
+  margin: '10px 0',
+  borderRadius: '8px',
+  border: '1px solid #ccc',
+};
+
+const buttonStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '10px',
+  borderRadius: '8px',
+  border: 'none',
+  backgroundColor: '#8B3A2F',
+  color: '#fff',
+  fontSize: '1rem',
+  cursor: 'pointer',
+};
