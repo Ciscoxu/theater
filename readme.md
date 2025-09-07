@@ -1,11 +1,10 @@
 ## System Architecture
 
 ### Frontend Architecture
-- **框架**: React SPA (单页应用)
-- **路由**: Wouter for client-side routing
-- **状态管理**: TanStack Query for server state management
-- **UI组件**: Shadcn/UI components with Tailwind CSS
-- **表单处理**: React Hook Form with Zod validation
+- **框架**: React
+- **路由**: react router for client-side routing
+- **UI组件**: Shadcn/UI components
+- **表单处理**: React Hook Form
 - **主题**: 支持深色/浅色主题切换
 
 ### Project Structure
